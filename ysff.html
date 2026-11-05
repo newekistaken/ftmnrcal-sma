@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafik Tasarımı - Fotoğrafçılık Vize Çalışma Portalı</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --card-hover: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --border: #222f49;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 60px; }
+    header { background: linear-gradient(135deg, #1e1b4b, #090d16); border-bottom: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; }
+    header h1 { font-size: 2rem; color: #fff; margin-bottom: 0.5rem; }
+    header p { color: var(--text-muted); max-width: 800px; margin: 0 auto; font-size: 0.95rem; }
+    .badge { display: inline-block; background-color: var(--primary); color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .tabs-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; justify-content: center; }
+    .tab-btn { background-color: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem 1.25rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+    .tab-btn:hover { background-color: var(--card-hover); color: var(--text); }
+    .tab-btn.active { background-color: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+    .content-section { display: none; }
+    .content-section.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+    .card h2 { font-size: 1.45rem; color: var(--accent); margin: 1.25rem 0 0.75rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .card h2:first-child { margin-top: 0; }
+    .card h3 { font-size: 1.15rem; color: #fff; margin: 1.25rem 0 0.5rem 0; }
+    .card p { color: #cbd5e1; margin-bottom: 0.75rem; font-size: 0.95rem; }
+    .card ul { margin: 0.5rem 0 1rem 1.5rem; color: #cbd5e1; font-size: 0.95rem; }
+    .card li { margin-bottom: 0.45rem; }
+    .card strong { color: #fff; }
+    .quiz-container { background-color: #0b1120; border: 2px solid var(--primary); border-radius: 16px; padding: 2rem; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .quiz-title { font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .score-badge { background-color: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+    .question-card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .q-number { font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .q-text { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 1rem; }
+    .options-grid { display: grid; gap: 0.5rem; }
+    .option-btn { background-color: #090d16; border: 1px solid var(--border); color: #cbd5e1; padding: 0.75rem 1rem; border-radius: 8px; text-align: left; cursor: pointer; font-size: 0.92rem; transition: 0.15s; width: 100%; }
+    .option-btn:hover:not(.disabled) { background-color: var(--card-hover); border-color: var(--accent); color: #fff; }
+    .option-btn.correct { background-color: rgba(16, 185, 129, 0.2) !important; border-color: var(--success) !important; color: #34d399 !important; font-weight: 600; }
+    .option-btn.wrong { background-color: rgba(239, 68, 68, 0.2) !important; border-color: var(--danger) !important; color: #f87171 !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="badge">Vize Sınavı Kapsamlı Çalışma Portalı</span>
+    <h1>Grafik Tasarımı 1. Sınıf: Temel Fotoğrafçılık</h1>
+    <p>5 Kaynak Ders Notuna Ait Detaylı Akademik Özetler ve 150 Soruluk Deneme Sınavı</p>
+  </header>
+
+  <div class="container">
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab(0)">Sayfa 1: Fotoğrafın Tarihi (30 Soru)</button>
+      <button class="tab-btn" onclick="switchTab(1)">Sayfa 2: Makine Türleri (30 Soru)</button>
+      <button class="tab-btn" onclick="switchTab(2)">Sayfa 3: Objektif Türleri (30 Soru)</button>
+      <button class="tab-btn" onclick="switchTab(3)">Sayfa 4: ISO & Pozlama (30 Soru)</button>
+      <button class="tab-btn" onclick="switchTab(4)">Sayfa 5: Diyafram & Enstantane (30 Soru)</button>
+    </nav>
+
+    <!-- SAYFA 1 -->
+    <section id="tab-0" class="content-section active">
+      <div class="card">
+        <h2>KAYNAK DERS NOTU: Fotoğrafın Tarihi 2.pdf</h2>
+        <h2>1. Kuramsal ve Tarihsel Temeller</h2>
+        <p>Fotoğrafın icadı, optik ve kimyasal iki bağımsız disiplinin yüzyıllar süren evrimi sonucunda 19. yüzyılın ilk yarısında birleşmesiyle gerçekleşmiştir.</p>
+        <h3>1.1. Optik Gelişim: Karanlık Kutu (Camera Obscura)</h3>
+        <ul>
+          <li><strong>Temel Prensip:</strong> Karanlık bir odanın veya kutunun tek bir yüzeyine açılan küçük bir iğne deliğinden (pinhole) geçen ışık ışınlarının, karşı duvarda dışarıdaki sahnenin baş aşağı ve ters bir görüntüsünü oluşturması ilkesine dayanır.</li>
+          <li><strong>Tarihsel Süreç:</strong> Bu optik ilke Antik Çağ'da Aristoteles ve Çinli filozof Mo-Ti tarafından gözlemlenmiş, 10. yüzyılda optik biliminin kurucusu İbn-i Heysem (Alhazen) tarafından matematiksel ve fiziksel olarak açıklanmıştır. Rönesans döneminde Leonardo da Vinci tarafından ressamların perspektif ve anatomi çizimlerinde bir yardımcı araç olarak kullanılmıştır.</li>
+          <li><strong>Johann Zahn ve Taşınabilirlik Devrimi (1776):</strong> 18. yüzyılda Alman bilim insanı Johann Zahn, özellikle portre ressamlarının açık alanda ve atölyede rahatça kullanabilmesi amacıyla elde taşınabilir boyutta ilk kompakt Camera Obscura modelini tasarlamıştır. Zahn, kutu içerisine yerleştirdiği 45 derecelik açılı ayna mekanizması ile ters görüntüyü kutunun üstündeki mat cam yüzeye düz olarak yansıtmış; netlik ayarını ise tüp içine yerleştirilmiş ileri-geri hareket eden mercek sistemiyle sağlamıştır. Bu tasarım, 19. ve 20. yüzyıl SLR (Tek Objektifli Refleks) fotoğraf makinelerinin temel optik atası kabul edilir.</li>
+        </ul>
+        <h3>1.2. Kimyasal Gelişim ve Görüntüyü Kalıcı Kılma Arayışı</h3>
+        <ul>
+          <li><strong>Thomas Wedgwood ve Gümüş Nitrat Deneyleri (1790'lar):</strong> Wedgwood, ışığa duyarlı gümüş nitrat emdirilmiş deri ve kağıt yüzeyler üzerine nesneler koyarak gölge görüntüleri (fotogram benzeri silüetler) elde etmiştir. Ancak oluşan bu kimyasal reaksiyonu durduracak ve sabitleyecek (fiksaj) bir yöntem bulamadığı için, elde ettiği görüntüler gün ışığına çıkarıldığında tamamen kararmış ve kalıcı hale getirilememiştir.</li>
+        </ul>
+        <h3>1.3. İlk Başarılı Kalıcı Görüntü: Joseph Nicéphore Niépce ve Heliografi (1826)</h3>
+        <ul>
+          <li><strong>İlk Kalıcı Fotoğraf:</strong> Fransız mucit Joseph Nicéphore Niépce, 1826 yılında Le Gras'daki evinin çalışma odasının penceresinden dışarıdaki çiftlik binalarını ve güvercinliği görüntüleyerek tarihin bilinen ilk kalıcı fotoğrafını çekmiştir.</li>
+          <li><strong>Heliografi (Güneş Çizimi) Yöntemi:</strong> Niépce, kurşun ve kalay alaşımı (pewter) bir plaka üzerine Filistin'deki Juda (Ölü Deniz) gölünden çıkarılan doğal bir asfalt türevi olan 'Juda Bitümü' (Bitumen of Judea) tabakası sürmüştür.</li>
+          <li><strong>Pozlama Süresi ve Mekanizma:</strong> Güneş ışığına maruz kalan bitüm sertleşerek çözünmez hale gelmiş; gölgede kalan kısımlar ise lavanta yağı ve beyaz petrol karışımıyla yıkanarak temizlenmiştir. Bu işlem tam 8 saatlik kesintisiz pozlama gerektirmiştir. Bu uzun süre nedeniyle fotoğraftaki binaların her iki cephesinde de güneş gölgeleri oluşmuştur.</li>
+        </ul>
+        <h3>1.4. Fotoğraf Tarihindeki Önemli İlkler ve Ticari Dönüm Noktaları</h3>
+        <ul>
+          <li><strong>İlk İnsanlı Fotoğraf (1838/1839):</strong> Louis Jacques Mandé Daguerre tarafından Paris'te Boulevard du Temple caddesinde çekilen dagerreyotipte, ayakkabısını boyatan bir adam ve boyacı pozlama boyunca sabit kaldıkları için fotoğrafta beliren ilk insan figürleri olmuşlardır.</li>
+          <li><strong>İlk İnsan Portresi ve İlk Otoportre / Selfie (1839):</strong> Robert Cornelius, Philadelphia'daki aile lambası dükkanının arka bahçesinde kameranın kapağını açıp objektifin karşısında yaklaşık 15 dakika boyunca hareketsiz durarak tarihteki ilk insan portresini ve ilk otoportreyi kaydetmiştir.</li>
+          <li><strong>İlk Kadın Portresi (1839):</strong> John William Draper, kız kardeşi Dorothy Catherine Draper'ın portresini çekmiştir.</li>
+          <li><strong>İlk Renkli Fotoğraf İddiası ve Doğrulanması (1851 / 2010):</strong> Levi Hill, 'Hillotype' yöntemiyle renkli fotoğraf çektiğini iddia etmiş; 2010 yılında yapılan spektroskopik analizler Hill'in gerçekten renk emülsiyonunu kısmen başardığını kanıtlamıştır.</li>
+          <li><strong>İlk Gerçek Üç Renkli Fotoğraf (1861):</strong> İskoç fizikçi James Clerk Maxwell, üç renkli ayrım teorisini kullanarak kırmızı, yeşil ve mavi filtrelerle pozladığı üç ayrı slaytı üst üste yansıtarak ekose tartan kurdele fotoğrafını elde etmiştir.</li>
+          <li><strong>İlk Dijital Fotoğraf ve Sensör (1957 & 1975):</strong> Russell Kirsch 1957'de SEAC bilgisayarı için ilk dijital tarayıcıyı geliştirip oğlunun 176x176 piksellik fotoğrafını taramıştır. 1975'te ise Kodak mühendisi Steven Sasson, CCD sensörlü ilk taşınabilir dijital fotoğraf makinesini üretmiştir (0.01 megapiksel, kaset banda kayıt süresi 23 saniye).</li>
+          <li><strong>Uzay Görevleri ve Fotoğraf:</strong> 1968 yılında Apollo 8 mürettebatından William Anders tarafından Ay yörüngesinden çekilen 'Earthrise' (Dünya'nın Doğuşu), insanlığın derin uzaydan Dünya'yı gördüğü ilk renkli karedir. 1975 yılında Sovyetler Birliği'ne ait Venera 9 aracı ise başka bir gezegenin (Venüs) yüzeyinden ilk fotoğrafı dünyaya ulaştırmıştır.</li>
+        </ul>
+      </div>
+
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">🎯 Sayfa 1 İnteraktif Testi (30 Soru)</div>
+          <div class="score-badge" id="score-0">Puan: 0 / 30</div>
+        </div>
+        <div id="quiz-list-0"></div>
+      </div>
+    </section>
+
+    <!-- SAYFA 2 -->
+    <section id="tab-1" class="content-section">
+      <div class="card">
+        <h2>KAYNAK DERS NOTU: fotoğraf makinesi türleri.pdf</h2>
+        <h2>1. Fotoğraf Makinelerinin Yapısı ve Temel Mekanizması</h2>
+        <p>Fotoğraf makinesi, nesnelerden yansıyan ışığı kontrollü bir şekilde geçirerek ışığa duyarlı bir yüzey (film veya dijital sensör) üzerine odaklayan optik ve mekanik bir cihazdır. Dört temel kritere göre sınıflandırılır: Film/sensör formatı, vizör sistemi, netleme mekanizması ve kayıt teknolojisi.</p>
+        <h2>2. Analog Makinelerde Film Formatlarına Göre Sınıflandırma</h2>
+        <h3>2.1. Küçük Formatlı Fotoğraf Makineleri</h3>
+        <ul>
+          <li><strong>Standart Boyut:</strong> 35 mm sinema filminden uyarlanan 135 format film kullanılır. Bir karenin fiziksel boyutu <strong>24 x 36 mm</strong>'dir.</li>
+          <li><strong>Avantajları:</strong> Gövdelerin hafif ve kompakt olması, filmlerin kolay temin edilmesi ve hızlı pozlama imkanı sunması nedeniyle sokak, haber ve gezi fotoğrafçılığının temel standardı olmuştur.</li>
+        </ul>
+        <h3>2.2. Orta Format Fotoğraf Makineleri</h3>
+        <ul>
+          <li><strong>Film Tipi ve Boyutları:</strong> Genellikle 120 veya 220 tipi rulo film kullanırlar. Film eni 6 cm olup; 6x4.5 cm, 6x6 cm, 6x7 cm, 6x8 cm ve 6x9 cm gibi farklı kare oranlarında çekim yapabilirler.</li>
+          <li><strong>Kullanım Alanları:</strong> Küçük formata göre yaklaşık 3-4 kat daha geniş film alanı sundukları için gren yapısı çok incedir, ton geçişleri son derece yumuşaktır. Stüdyo portreleri, moda çekimleri ve profesyonel ticari ürün fotoğrafçılığında kullanılırlar.</li>
+        </ul>
+        <h3>2.3. Büyük Format Fotoğraf Makineleri (Körüklü / Stüdyo / Alan Kameraları)</h3>
+        <ul>
+          <li><strong>Film Yapısı:</strong> Rulo film yerine tek tek kasetlere doldurulan yaprak filmler (sheet film) kullanılır. En yaygın boyutlar 4x5 inç (yaklaşık 10x12 cm) ve 8x10 inç (yaklaşık 20x25 cm)'tir.</li>
+          <li><strong>Körük ve Hareket Yeteneği (Scheimpflug Prensibi):</strong> Ön panel (objektif standardı) ile arka panel (film düzlemi) birbirine esnek bir körükle bağlıdır. Bu paneller bağımsız olarak eğilebilir (tilt), döndürülebilir (swing), yukarı-aşağı kaydırılabilir (rise/fall) ve sağa-sola kaydırılabilir (shift). Bu hareketler sayesinde perspektif bükülmeleri (örneğin gökdelen çekimlerindeki kaçış çizgileri) tamamen sıfırlanabilir ve alan derinliği sonsuza kadar kontrol edilebilir. Mimari, manzara ve müze reprodüksiyonlarında alternatifsizdir.</li>
+        </ul>
+        <h2>3. Vizör Sistemlerine ve Tasarımlarına Göre Makineler</h2>
+        <ul>
+          <li><strong>SLR / DSLR (Tek Objektifli Refleks):</strong> Çekim yapılan objektif ile vizör görüntüsünü oluşturan optik hat aynıdır. Objektiften giren ışık 45 derecelik açıyla duran bir aynaya çarpar, yukarıdaki pentaprizma veya pentaynaya yansır ve vizöre ulaşır. Deklanşöre basıldığı anda ayna yukarı kalkar, örtücü açılır ve ışık filme/sensöre vurur. <strong>Parallaks hatası sıfırdır.</strong></li>
+          <li><strong>Aynasız (Mirrorless) Makineler:</strong> Mekanik ayna ve pentaprizma bloğu tamamen kaldırılmıştır. Sensör kesintisiz olarak dış dünyayı kaydeder ve veriyi doğrudan Elektronik Vizöre (EVF) veya arka LCD ekrana aktarır. Gövdeler çok daha ince, hafif ve sessizdir.</li>
+          <li><strong>TLR (Twin Lens Reflex - Çift Objektifli Refleks):</strong> Üst üste iki adet eş odaklı objektif bulunur. Üstteki objektif sadece vizöre görüntü verirken, alttaki objektif filmi pozlar. Genellikle tepeden bakmalı mat cam vizöre sahiptir. Yakın çekimlerde üst ve alt objektif arasındaki açı farkı nedeniyle <strong>parallaks hatası</strong> oluşur.</li>
+          <li><strong>Telemetreli (Rangefinder) Makineler:</strong> Objektiften bağımsız ayrı bir optik pencereden bakılır. İki farklı pencereden gelen görüntü optik olarak üst üste bindirildiğinde netlik sağlanmış olur (Örn: Leica M serisi). Ayna titreşimi ve sesi yoktur, son derece kompakttır ancak yakın mesafelerde parallaks hatası barındırır.</li>
+        </ul>
+        <h2>4. Dijital Sensörler: CCD ve CMOS Mimarisi</h2>
+        <ul>
+          <li><strong>CCD (Charge-Coupled Device):</strong> Fotonları elektrik yüküne çevirir ve analog yükü çipin kenarındaki ortak bir dönüştürücüye aktarır. Yüksek dinamik aralık ve üstün renk doğruluğu sunar ancak üretimi maliyetlidir ve yüksek güç (pil) tüketir.</li>
+          <li><strong>CMOS (Complementary Metal-Oxide-Semiconductor):</strong> Her bir piksel kendi fotodiyotunun yanı sıra kendi mikro-amplifikatör ve transistörüne sahiptir. Piksel bazında dönüştürme yapıldığı için veri okuma hızı çok yüksektir, pil tüketimi son derece düşüktür ve günümüz DSLR ile aynasız makinelerinin ana standardıdır.</li>
+        </ul>
+      </div>
+
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">🎯 Sayfa 2 İnteraktif Testi (30 Soru)</div>
+          <div class="score-badge" id="score-1">Puan: 0 / 30</div>
+        </div>
+        <div id="quiz-list-1"></div>
+      </div>
+    </section>
+
+    <!-- SAYFA 3, 4, 5 (BÖLÜM 2'DE DOLDURULACAK) -->
+    <section id="tab-2" class="content-section">
+      <div class="card" id="page-3-content">
+        <h2>Sayfa 3: Foto Objektif Türleri (30 Soru)</h2>
+        <p><em>Bu bölümün ders notları ve 30 sorusu Bölüm 2 veri paketiyle yüklenecektir.</em></p>
+      </div>
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">🎯 Sayfa 3 İnteraktif Testi (30 Soru)</div>
+          <div class="score-badge" id="score-2">Puan: 0 / 30</div>
+        </div>
+        <div id="quiz-list-2"></div>
+      </div>
+    </section>
+
+    <section id="tab-3" class="content-section">
+      <div class="card" id="page-4-content">
+        <h2>Sayfa 4: ISO, Çekim Modları, Beyaz Ayarı ve Pozlama Telafisi (30 Soru)</h2>
+        <p><em>Bu bölümün ders notları ve 30 sorusu Bölüm 2 veri paketiyle yüklenecektir.</em></p>
+      </div>
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">🎯 Sayfa 4 İnteraktif Testi (30 Soru)</div>
+          <div class="score-badge" id="score-3">Puan: 0 / 30</div>
+        </div>
+        <div id="quiz-list-3"></div>
+      </div>
+    </section>
+
+    <section id="tab-4" class="content-section">
+      <div class="card" id="page-5-content">
+        <h2>Sayfa 5: Kayıt Formatları, Diyafram ve Enstantane (30 Soru)</h2>
+        <p><em>Bu bölümün ders notları ve 30 sorusu Bölüm 2 veri paketiyle yüklenecektir.</em></p>
+      </div>
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">🎯 Sayfa 5 İnteraktif Testi (30 Soru)</div>
+          <div class="score-badge" id="score-4">Puan: 0 / 30</div>
+        </div>
+        <div id="quiz-list-4"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // 150 SORULUK VERİ TABANI
+    const allQuestions = {
+      0: [
+        { n: 1, q: "Karanlık bir odanın duvarına açılan küçük bir delikten dışarıdaki görüntünün karşı duvara baş aşağı yansıması ilkesine ne ad verilir?", o: ["Heliografi", "Camera Obscura", "Dagereotip", "Kalotip"], a: 1 },
+        { n: 2, q: "1776 yılında portre ressamlarının kolay çizim yapabilmesi için elde taşınabilir boyutta ilk kompakt Camera Obscura'yı üreten bilim insanı kimdir?", o: ["Thomas Wedgwood", "Leonardo da Vinci", "Johann Zahn", "Louis Daguerre"], a: 2 },
+        { n: 3, q: "Johann Zahn'ın 1776'da tasarladığı Camera Obscura modelinde netlik ayarı hangi mekanizma ile yapılmaktaydı?", o: ["Dijital sensör kaydırma bileziği", "Tüp içine yerleştirilmiş ileri-geri hareket eden mercek sistemi", "Körüklü shift adaptörü", "Sıvı lens haznesi"], a: 1 },
+        { n: 4, q: "18. yüzyılda Johann Zahn'ın camera obscura içine eklediği 45 derecelik açılı ayna sistemi günümüzdeki hangi makine türünün atası sayılır?", o: ["Telemetreli makineler", "SLR (Tek objektifli refleks) makineler", "Kompakt makineler", "Büyük format körüklü stüdyo makineleri"], a: 1 },
+        { n: 5, q: "1826 yılında tarihin bilinen ilk kalıcı fotoğrafını çekmeyi başaran Fransız araştırmacı kimdir?", o: ["Louis Daguerre", "Joseph Nicéphore Niépce", "Robert Cornelius", "John Draper"], a: 1 },
+        { n: 6, q: "Joseph Nicéphore Niépce'in 1826 yılında çektiği ilk fotoğrafta görüntülenen sahne aşağıdakilerden hangisidir?", o: ["Boulevard du Temple caddesindeki insan kalabalığı", "Philadelphia sokakları", "Le Gras'daki evinin penceresinden dışarıdaki çiftlik manzarası", "Bir kumaş kurdele"], a: 2 },
+        { n: 7, q: "Niépce'in ilk fotoğrafı elde ederken kullandığı ve 'Güneş Çizimi' anlamına gelen yöntemin adı nedir?", o: ["Dagerreyotip", "Heliografi", "Talbotip", "Siyanotip"], a: 1 },
+        { n: 8, q: "Niépce'in heliografi yönteminde görüntü kaydı için ışığa duyarlı madde olarak kullandığı doğal asfalt türevi malzeme nedir?", o: ["Gümüş klorür", "Juda Bitümü (Bitumen of Judea)", "Kollodyon emülsiyonu", "Demir oksit"], a: 1 },
+        { n: 9, q: "Niépce'in 1826 tarihli ilk fotoğrafını oluşturabilmek için uyguladığı pozlama süresi yaklaşık ne kadardır?", o: ["15 saniye", "8 saat", "1/125 saniye", "3 gün"], a: 1 },
+        { n: 10, q: "Niépce'in ilk fotoğrafında binaların her iki tarafında da güneş gölgelerinin görülmesinin temel nedeni nedir?", o: ["İki ayrı flaş kullanılması", "Pozlama süresinin 8 saat sürmesi ve güneşin gökyüzünde yer değiştirmesi", "Fotoğrafın iki negatifin üst üste basılmasıyla üretilmesi", "Kullanılan lensin çift odaklı olması"], a: 1 },
+        { n: 11, q: "Tarihte ilk kez bir insan figürünün yer aldığı fotoğrafı 1838/1839 yılında Paris'te Boulevard du Temple caddesinde çeken kimdir?", o: ["Nicéphore Niépce", "William Henry Fox Talbot", "Louis Jacques Mandé Daguerre", "Robert Cornelius"], a: 2 },
+        { n: 12, q: "Boulevard du Temple fotoğrafında sokaktaki hareketli at arabaları ve yayalar görünmezken, bir kişinin net olarak belirmesinin sebebi nedir?", o: ["Ayakkabısını boyatırken pozlama süresi boyunca hareketsiz kalması", "Objektife çok yakın durması", "Fotoğrafçının özel asistanı olması", "Üzerinde parlak beyaz elbise bulunması"], a: 0 },
+        { n: 13, q: "1839 yılında Philadelphia'da tarihteki ilk insan portresini ve ilk otoportreyi (selfie) çeken kimdir?", o: ["John William Draper", "Robert Cornelius", "Samuel Morse", "George Eastman"], a: 1 },
+        { n: 14, q: "Robert Cornelius'un 1839 tarihli ilk otoportresini çekerken objektif önünde hareketsiz durduğu pozlama süresi ne kadardır?", o: ["1/2 saniye", "1 dakika", "Yaklaşık 10-15 dakika", "4 saat"], a: 2 },
+        { n: 15, q: "Tarihte bilinen ilk kadın portresi fotoğrafı (Dorothy Catherine Draper) hangi araştırmacı tarafından çekilmiştir?", o: ["Louis Daguerre", "John William Draper", "Levi Hill", "James Clerk Maxwell"], a: 1 },
+        { n: 16, q: "Dorothy Catherine Draper'ın portresinde yüzünün solgun ve parlak görünmesini sağlayarak pozlama süresini kısaltmak için uygulanan yöntem nedir?", o: ["Yüzüne un sürülmesi", "Mavi filtre kullanılması", "Arkadan ayna tutulması", "Gözlerini kapatması"], a: 0 },
+        { n: 17, q: "1851 yılında 'Hillotype' yöntemiyle ilk renkli fotoğrafı bulduğunu iddia eden ve uzun süre sahtekarlıkla suçlanan araştırmacı kimdir?", o: ["James Clerk Maxwell", "Levi Hill", "Russell Kirsch", "Thomas Wedgwood"], a: 1 },
+        { n: 18, q: "Levi Hill'in renkli fotoğraf yönteminin gerçekliği hangi yıl yapılan kimyasal spektroskopik analizlerle doğrulanmıştır?", o: ["1890", "1950", "2010", "1985"], a: 2 },
+        { n: 19, q: "1861 yılında üç renkli ayrım yöntemiyle (kırmızı, yeşil, mavi) ilk kalıcı renkli fotoğrafı oluşturan İskoç fizikçi kimdir?", o: ["Lord Kelvin", "James Clerk Maxwell", "Michael Faraday", "Isaac Newton"], a: 1 },
+        { n: 20, q: "James Clerk Maxwell'in 1861 tarihli ilk renkli fotoğrafında konu olarak ne kullanılmıştır?", o: ["Bir kase meyve", "Ekose tartan kumaş kurdele", "Kendi portresi", "Gül buketi"], a: 1 },
+        { n: 21, q: "1957 yılında SEAC bilgisayarı için ilk dijital tarayıcıyı geliştirerek oğlunun fotoğrafını dijitalleştiren kimdir?", o: ["Steven Sasson", "Alan Turing", "Russell Kirsch", "Tim Berners-Lee"], a: 2 },
+        { n: 22, q: "1975 yılında Kodak laboratuvarlarında ilk taşınabilir dijital fotoğraf makinesini üreten mühendis kimdir?", o: ["George Eastman", "Steven Sasson", "Edwin Land", "Chester Carlson"], a: 1 },
+        { n: 23, q: "Steven Sasson'un 1975 yılında ürettiği ilk dijital makinede görüntüler hangi ortama kaydedilmekteydi?", o: ["Disket", "SD Kart", "Compact Flash", "Manyetik ses kaset bandı"], a: 3 },
+        { n: 24, q: "1968 yılında Apollo 8 mürettebatından William Anders tarafından Ay yörüngesinden çekilen tarihi Dünya fotoğrafına ne ad verilir?", o: ["Earthrise (Dünya'nın Doğuşu)", "Pale Blue Dot", "The Blue Marble", "Earth at Night"], a: 0 },
+        { n: 25, q: "1975 yılında Sovyetler Birliği'ne ait hangi uzay aracı Venüs yüzeyine inerek başka bir gezegenin yüzeyinden ilk fotoğrafı göndermiştir?", o: ["Sputnik 1", "Venera 9", "Luna 2", "Mars 3"], a: 1 },
+        { n: 26, q: "1790'larda gümüş nitrat kullanarak deri üzerinde gölge resimleri oluşturan ancak sabitleme yapamadığı için görüntüleri kararan İngiliz öncü kimdir?", o: ["Thomas Wedgwood", "Humphry Davy", "William Fox Talbot", "John Herschel"], a: 0 },
+        { n: 27, q: "Camera Obscura'nın optik ilkelerini 10. yüzyılda Kitabü'l-Menazır adlı eserinde ilk kez fiziksel ve matematiksel olarak açıklayan bilim insanı kimdir?", o: ["İbn-i Sina", "İbn-i Heysem (Alhazen)", "Harezmi", "Biruni"], a: 1 },
+        { n: 28, q: "Tarihin ilk renkli fotoğrafında Maxwell'in uyguladığı üç renkli ayrım teorisi günümüzdeki hangi renk modelinin temelini oluşturur?", o: ["CMYK", "Pantone", "RGB (Kırmızı, Yeşil, Mavi)", "Grayscale"], a: 2 },
+        { n: 29, q: "Fotoğrafın kuramsal temelini oluşturan iki ana bilimsel alan hangileridir?", o: ["Optik (Fizik) ve Kimya", "Biyoloji ve Jeoloji", "Matematik ve Astronomi", "Mekanik ve Akustik"], a: 0 },
+        { n: 30, q: "Niépce'in heliografi yönteminde pozlanmış plakayı temizlemek için hangi kimyasal karışım kullanılmıştır?", o: ["Sülfürik asit ve su", "Lavanta yağı ve beyaz petrol", "Alkol ve aseton", "Sirke ve tuz"], a: 1 }
+      ],
+      1: [
+        { n: 1, q: "Küçük format (135 format) fotoğraf makinelerinde standart bir negatif veya sensör karesinin fiziksel ölçüsü nedir?", o: ["18 x 24 mm", "24 x 36 mm", "60 x 60 mm", "4 x 5 inç"], a: 1 },
+        { n: 2, q: "Küçük format fotoğraf makinelerinin tarihsel gelişiminde kullanılan film şeritleri aslen hangi endüstriden uyarlanmıştır?", o: ["Röntgen filmleri", "35 mm sinema endüstrisi", "Hava haritacılığı filmleri", "Baskı matbaa filmleri"], a: 1 },
+        { n: 3, q: "Orta format makinelerde en sık kullanılan rulo film standardı aşağıdakilerden hangisidir?", o: ["135 film", "120 / 220 film", "110 kartuş film", "APS film"], a: 1 },
+        { n: 4, q: "Aşağıdakilerden hangisi orta format makinelerde kullanılan standart kare formatlarından biri DEĞİLDİR?", o: ["6 x 4.5 cm", "6 x 6 cm", "6 x 7 cm", "24 x 36 cm"], a: 3 },
+        { n: 5, q: "Orta format makinelerin küçük format makinelere kıyasla stüdyo ve moda çekimlerinde tercih edilmesinin en temel teknik nedeni nedir?", o: ["Daha hafif ve küçük olmaları", "Film/sensör yüzeyi daha geniş olduğu için gren yapısının çok ince ve ton geçişlerinin zengin olması", "Pilsiz sonsuza kadar çalışabilmeleri", "Sadece balıkgözü lens kullanabilmeleri"], a: 1 },
+        { n: 6, q: "Büyük format fotoğraf makinelerinde rulo film yerine kullanılan film türüne ne ad verilir?", o: ["Kartuş film", "Yaprak film (Sheet film)", "Şerit film", "Disk film"], a: 1 },
+        { n: 7, q: "Büyük format makinelerde en yaygın kullanılan yaprak film boyutları aşağıdakilerden hangisidir?", o: ["24x36 mm ve 18x24 mm", "4x5 inç ve 8x10 inç", "6x6 cm ve 6x9 cm", "35 mm ve 70 mm"], a: 1 },
+        { n: 8, q: "Büyük format stüdyo ve alan kameralarında gövde panelleri arasındaki bağlantıyı sağlayan ve esnek hareket kabiliyeti veren parça nedir?", o: ["Pentaprizma", "Körük (Bellows)", "Telemetre aynası", "Bajonet halkası"], a: 1 },
+        { n: 9, q: "Büyük format körüklü makinelerde ön ve arka standartların eğilip bükülerek perspektif ve odak düzleminin kontrol edilmesini sağlayan optik kural hangisidir?", o: ["Snell Yasası", "Scheimpflug Prensibi", "Moire Etkisi", "Doppler Kanunu"], a: 1 },
+        { n: 10, q: "Büyük format makinelerde ön panelin (objektif) yukarı-aşağı kaydırılması (rise/fall) mimari fotoğrafçılıkta ne sağlar?", o: ["Binanın kaçış çizgilerini düzelterek dik çizgilerin birbirine yaklaşmasını önler", "Renk doygunluğunu iki katına çıkarır", "Enstantane hızını otomatik artırır", "Kameranın gece görüş moduna geçmesini sağlar"], a: 0 },
+        { n: 11, q: "SLR (Single Lens Reflex) fotoğraf makinelerinin çalışma mekanizmasının temel ayırt edici özelliği nedir?", o: ["İki ayrı objektif kullanması", "Görüntüyü çeken objektif ile vizöre yansıtan optik yolun aynı olması", "Hiç ayna içermemesi", "Vizörden bakılamaması"], a: 1 },
+        { n: 12, q: "SLR ve DSLR makinelerde ayna kalktığında görüntüyü vizörden ters yerine düzgün görmemizi sağlayan beşgen cam optik bloğun adı nedir?", o: ["Pentaprizma", "Kondansatör", "Filtre tutucu", "Reflektör"], a: 0 },
+        { n: 13, q: "SLR makinelerde çekim anında (deklanşöre basıldığında) vizörün anlık olarak kararmasının (blackout) sebebi nedir?", o: ["Sensörün elektriği kesmesi", "45 derecelik aynanın ışığın sensöre ulaşması için yukarı kalkması", "Objektif kapağının aniden kapanması", "Pentaprizmanın dönmesi"], a: 1 },
+        { n: 14, q: "Aynasız (Mirrorless) fotoğraf makinelerinin DSLR makinelere göre yapısal en büyük farkı nedir?", o: ["Hiç lens kullanılmaması", "Mekanik ayna ve pentaprizma sisteminin kaldırılarak görüntünün doğrudan sensörden elektronik vizöre (EVF) aktarılması", "Sadece siyah beyaz çekim yapabilmesi", "Daha büyük piller gerektirmesi"], a: 1 },
+        { n: 15, q: "TLR (Twin Lens Reflex) fotoğraf makinelerinde iki objektif bulunmasının amacı nedir?", o: ["Biri renkli diğeri siyah beyaz çekim yapar", "Biri vizöre görüntü aktarırken diğeri filmi pozlar", "Biri gündüz diğeri gece çekimi içindir", "Biri dijital diğeri analog kayıt yapar"], a: 1 },
+        { n: 16, q: "TLR makinelerde ve telemetreli kompakt makinelerde vizörün gördüğü açı ile objektifin gördüğü açı arasındaki farktan kaynaklanan hataya ne ad verilir?", o: ["Kromatik aberasyon", "Parallaks hatası", "Vinyet (köşe kararması)", "Distorsiyon"], a: 1 },
+        { n: 17, q: "SLR makinelerde parallaks hatası neden oluşmaz?", o: ["Çok küçük sensör kullandıkları için", "Vizöre gelen görüntü doğrudan çekim yapan objektifin içinden geçtiği için", "Otomatik netleme motoru olduğu için", "Pentaprizma ışığı büktüğü için"], a: 1 },
+        { n: 18, q: "Telemetreli (Rangefinder) fotoğraf makinelerinde netlik kontrolü vizörde nasıl gerçekleştirilir?", o: ["İki ayrı pencereden gelen görüntünün üst üste çakıştırılmasıyla", "Lazer ışını fırlatarak", "Otomatik ses dalgası yayarak", "Körüğün uzunluğunu cetvelle ölçerek"], a: 0 },
+        { n: 19, q: "Dijital fotoğraf makinelerinde ışığı elektrik sinyaline dönüştüren iki ana sensör mimarisi hangileridir?", o: ["RAM ve ROM", "CCD ve CMOS", "LED ve OLED", "LCD ve IPS"], a: 1 },
+        { n: 20, q: "CCD sensörlerin CMOS sensörlere göre geleneksel olarak en bilinen avantajı nedir?", o: ["Çok daha az enerji tüketmesi", "Düşük gürültü (noise) ve yüksek dinamik aralık ile üstün renk saflığı", "Çok daha ucuz üretilmesi", "İçinde transistör bulunmaması"], a: 1 },
+        { n: 21, q: "Günümüz modern dijital fotoğraf makinelerinde CMOS sensörlerin yaygınlaşmasının en temel sebebi nedir?", o: ["Her pikselde kendi amplifikatörü bulunması, hızlı veri okuması ve çok az enerji harcaması", "Sadece analog filmle çalışabilmesi", "Objektifsiz görüntü kaydedebilmesi", "Hiç ısınmaması"], a: 0 },
+        { n: 22, q: "Full Frame (Tam Kare) bir dijital sensörün fiziksel boyutları hangi analog film boyutuna eşdeğerdir?", o: ["6 x 6 cm", "24 x 36 mm (Küçük format)", "4 x 5 inç", "18 x 24 mm"], a: 1 },
+        { n: 23, q: "APS-C sensörlerin Full Frame sensörlere kıyasla görüntüde oluşturduğu etkiye ne ad verilir?", o: ["Kırpma faktörü (Crop factor)", "Perspektif patlaması", "Diyopter kayması", "Bokeh ayrışması"], a: 0 },
+        { n: 24, q: "Kompakt (Point and Shoot) fotoğraf makinelerinin temel karakteristik özelliği nedir?", o: ["Objektiflerinin gövdeye sabit olması ve değiştirilememesi", "En az 3 kg ağırlığında olmaları", "Sadece yaprak film kullanmaları", "Manuel körük mekanizması içermeleri"], a: 0 },
+        { n: 25, q: "Klasik bir TLR makinede fotoğrafçı kadrajı oluşturmak için makineye hangi açıdan bakar?", o: ["Doğrudan göz hizasından", "Makinenin üst kısmındaki mat cam vizöre tepeden bakarak", "Makinenin altındaki aynadan", "Objektifin önünden"], a: 1 },
+        { n: 26, q: "Hızlı hareket eden nesnelerin çekiminde mekanik ayna kalkış gecikmesi yaşamayan ve son derece sessiz çalışan vizör sistemi hangisidir?", o: ["Büyük format stüdyo kamerası", "Telemetreli (Rangefinder) veya Elektronik Vizörlü Aynasız makineler", "Körük tipi alan kamerası", "Tek objektifli refleks"], a: 1 },
+        { n: 27, q: "Analog fotoğrafçılıkta '120' ve '220' kodlu filmler hangi makine sınıfında kullanılır?", o: ["Küçük format", "Orta format", "Büyük format", "Minyatür casus makineleri"], a: 1 },
+        { n: 28, q: "Büyük format makinelerin doğa ve mimari fotoğrafçılığında sağladığı en büyük baskı avantajı nedir?", o: ["Çok hızlı seri çekim yapabilmesi", "Devasa negatif boyutu sayesinde detay kaybetmeden bina cephesi boyutunda dev baskılar verebilmesi", "Pilsiz video çekebilmesi", "Cep boyutunda taşınabilmesi"], a: 1 },
+        { n: 29, q: "Dijital makinelerdeki Elektronik Vizörün (EVF) optik vizöre (OVF) göre en büyük avantajı nedir?", o: ["Hiç pil tüketmemesi", "Pozlama, beyaz ayarı ve renk ayarlarının fotoğraf çekilmeden önce vizörde anlık olarak canlı görülebilmesi", "Karanlıkta hiçbir şey göstermemesi", "Gözü optik camdan koruması"], a: 1 },
+        { n: 30, q: "Aşağıdakilerden hangisi fotoğraf makinelerini sınıflandırırken kullanılan 4 ana kriterden biri DEĞİLDİR?", o: ["Film veya sensör formatı", "Vizör mekanizması", "Gövdenin dış boya rengi", "Kayıt teknolojisi (Analog/Dijital)"], a: 2 }
+      ],
+      2: [],
+      3: [],
+      4: []
+    };
+
+    // SEKME DEĞİŞTİRME
+    function switchTab(index) {
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === index));
+      document.querySelectorAll('.content-section').forEach((sec, i) => sec.classList.toggle('active', i === index));
+    }
+
+    // TEST MOTORU
+    const userScores = [0, 0, 0, 0, 0];
+    const userAnswers = [{}, {}, {}, {}, {}];
+
+    function renderQuiz(pageIdx) {
+      const container = document.getElementById(`quiz-list-${pageIdx}`);
+      const questions = allQuestions[pageIdx];
+      if (!questions || questions.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); padding:1rem;">Bu bölümün soruları Bölüm 2 veri paketiyle eklenecektir.</p>';
+        return;
+      }
+
+      let html = '';
+      questions.forEach((qObj, qIdx) => {
+        html += `
+          <div class="question-card" id="qc-${pageIdx}-${qIdx}">
+            <div class="q-number">Soru ${qObj.n} / ${questions.length}</div>
+            <div class="q-text">${qObj.q}</div>
+            <div class="options-grid">
+              ${qObj.o.map((opt, optIdx) => `
+                <button class="option-btn" onclick="selectAnswer(${pageIdx}, ${qIdx}, ${optIdx})">
+                  <strong>${String.fromCharCode(65 + optIdx)})</strong> ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      document.getElementById(`score-${pageIdx}`).textContent = `Puan: ${userScores[pageIdx]} / ${questions.length}`;
+    }
+
+    function selectAnswer(pageIdx, qIdx, optIdx) {
+      if (userAnswers[pageIdx][qIdx] !== undefined) return;
+      userAnswers[pageIdx][qIdx] = optIdx;
+
+      const qObj = allQuestions[pageIdx][qIdx];
+      const card = document.getElementById(`qc-${pageIdx}-${qIdx}`);
+      const btns = card.querySelectorAll('.option-btn');
+
+      btns.forEach((btn, idx) => {
+        btn.classList.add('disabled');
+        if (idx === qObj.a) btn.classList.add('correct');
+        else if (idx === optIdx) btn.classList.add('wrong');
+      });
+
+      if (optIdx === qObj.a) {
+        userScores[pageIdx]++;
+      }
+      document.getElementById(`score-${pageIdx}`).textContent = `Puan: ${userScores[pageIdx]} / ${allQuestions[pageIdx].length}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuiz(0);
+      renderQuiz(1);
+      renderQuiz(2);
+      renderQuiz(3);
+      renderQuiz(4);
+    });
+// ==================== BÖLÜM 2: SAYFA 3, SAYFA 4 VE SAYFA 5 DERS NOTLARI VE 90 SORU ====================
+
+// --- SAYFA 3 DERS NOTLARI VE AKADEMİK ÖZETİ ---
+document.getElementById('page-3-content').innerHTML = `
+  <h2>KAYNAK DERS NOTU: Foto Objektif Türleri.pdf</h2>
+  <h2>1. Objektifin Tanımı ve Optik İşlevi</h2>
+  <p>Objektif (lens), fotoğraflanacak konudan yansıyan ışık ışınlarını toplayarak kırıp büken ve görüntü düzlemindeki film veya sensör üzerine odaklayan mercekler topluluğudur. Fotoğrafın teknik kalitesini, netliğini, kontrastını ve perspektif yapısını belirleyen en kritik bileşendir.</p>
+  <h3>1.1. Odak Uzaklığı (Focal Length) ve Görüş Açısı İlişkisi</h3>
+  <ul>
+    <li><strong>Odak Uzaklığı Tanımı:</strong> Sonsuza odaklanmış bir objektifin optik merkezi ile görüntünün net olarak düştüğü sensör/film düzlemi arasındaki milimetre (mm) cinsinden mesafedir.</li>
+    <li><strong>Ters Orantı Kuralı:</strong> Odak uzaklığı küçüldükçe (örn: 14 mm, 24 mm) objektifin görüş açısı genişler; odak uzaklığı büyüdükçe (örn: 200 mm, 400 mm) görüş açısı daralır.</li>
+  </ul>
+  <h2>2. Odak Uzaklığı Yapısına Göre Objektifler</h2>
+  <ul>
+    <li><strong>Sabit Odaklı (Prime) Objektifler:</strong> Tek bir odak uzaklığına sahiptirler (örn: 50 mm, 85 mm). İçlerinde az sayıda optik eleman bulunduğu için ışık geçirgenlikleri çok yüksektir (f/1.2, f/1.4 gibi çok geniş diyaframlar sunarlar), optik bozulmaları minimumdur ve üstün keskinlik üretirler.</li>
+    <li><strong>Değişken Odaklı (Zoom) Objektifler:</strong> Mercek gruplarının ileri-geri hareketiyle odak uzaklığı belirli bir aralıkta değiştirilebilir (örn: 24-70 mm, 70-200 mm). Çok yönlü kullanım ve pratiklik sağlarlar.</li>
+  </ul>
+  <h2>3. Görüş Açısına Göre Objektif Sınıflandırması (35 mm Eşdeğeri)</h2>
+  <ul>
+    <li><strong>Balıkgözü (Fisheye) Objektifler (6 mm - 16 mm):</strong> 180 derece veya daha geniş bir görüş açısına sahiptir. Optik fıçı distorsiyonu (küresel bozulma) kasıtlı olarak düzeltilmez; dairesel veya köşeden köşeye bükülmüş küresel görüntüler üretir.</li>
+    <li><strong>Geniş Açılı Objektifler (16 mm - 35 mm):</strong> Görüş açıları 60° ile 100° arasındadır. Konuya yakın durulduğunda ön planı abartılı şekilde büyütür, arka planı uzaklaştırır ve derinlik hissini artırır. Dar mekanlar, mimari çekimler ve manzara fotoğrafçılığı için vazgeçilmezdir.</li>
+    <li><strong>Normal (Standart) Objektifler (Yaklaşık 50 mm):</strong> Görüş açıları 45° - 50° civarındadır. İnsan gözünün tek gözle baktığında algıladığı perspektif ve derinlik oranlarına en yakın görüntüyü verir. Doğal perspektifi sayesinde sokak, belgesel ve portre çalışmalarında yaygındır.</li>
+    <li><strong>Telefoto (Dar Açılı) Objektifler (85 mm - 300 mm ve üzeri):</strong> Görüş açıları 30 derecenin altındadır. Uzaktaki nesneleri yakınlaştırır ve optik olarak <strong>perspektif sıkışması</strong> (arka plan ile ön planı birbirine yapışıkmış gibi yaklaştırma) yaratır. 85-135 mm portre için ideal yüz oranları verirken; 300 mm ve üzeri vahşi yaşam ve spor fotoğrafçılığında kullanılır.</li>
+  </ul>
+  <h2>4. Özel Amaçlı Objektifler</h2>
+  <ul>
+    <li><strong>Makro Objektifler:</strong> Çok yakın mesafeden netleme yapabilen ve sensör üzerine konunun fiziksel boyutunu en az 1:1 (bire bir gerçek boyut) reprodüksiyon oranıyla aktarabilen lenslerdir. Tıbbi çekimler, takı, böcek ve detay fotoğrafçılığında kullanılır.</li>
+    <li><strong>Tilt-Shift (Eğme-Kaydırma) Objektifler:</strong> Optik eksenin sensöre paralel veya dik açısını değiştirerek perspektif kaçış çizgilerini düzelten ya da odak düzlemini eğerek minyatür (diorama) etkisi oluşturan özel mekanizmalı lenslerdir.</li>
+    <li><strong>Anamorfik Objektifler:</strong> Sinematik geniş format görüntüyü dairesel yerine yatayda optik olarak sıkıştırarak sensöre kaydeden merceklerdir. Dairesel yerine karakteristik oval bokeh ve yatay mavi ışık parlamaları (flare) üretirler.</li>
+  </ul>
+`;
+
+// --- SAYFA 4 DERS NOTLARI VE AKADEMİK ÖZETİ ---
+document.getElementById('page-4-content').innerHTML = `
+  <h2>KAYNAK DERS NOTU: ıso çekim modları beyaz ayarı pozlama telafisi.pdf</h2>
+  <h2>1. ISO (Işık Duyarlılığı) Kavramı ve Dijital Kumlanma (Noise)</h2>
+  <p>ISO (analog dönemdeki adıyla ASA), sensörün ışığa karşı duyarlılık derecesini ifade eder.</p>
+  <ul>
+    <li><strong>Standart Değerler:</strong> 100, 200, 400, 800, 1600, 3200, 6400... Her değer artışı sensörün ışık hassasiyetini iki katına çıkarır (1 stop kazanç).</li>
+    <li><strong>Düşük ISO (100 - 200):</strong> Güneşli ve aydınlık ortamlarda kullanılır; maksimum keskinlik, en yüksek dinamik aralık ve sıfır gren sunar.</li>
+    <li><strong>Yüksek ISO (1600 ve üzeri):</strong> Gece ve loş mekanlarda elde çekim yapabilmek için kullanılır; ancak elektrik sinyali yükseltildiği için fotoğrafta <strong>kumlanma (noise/gren)</strong>, detay kaybı ve renk solgunluğuna yol açar.</li>
+  </ul>
+  <h2>2. Temel Çekim Modları (Pozlama Kadranı)</h2>
+  <ul>
+    <li><strong>P (Program Modu):</strong> Makine sahnenin ışığına göre diyafram ve enstantaneyi otomatik olarak ayarlar; ancak ISO, beyaz ayarı ve flaş kontrolünü kullanıcıya bırakır.</li>
+    <li><strong>Av / A (Aperture Priority - Diyafram Öncelikli Mod):</strong> Fotoğrafçı diyafram f-değerini belirler (alan derinliği kontrolü); makine doğru pozlama için enstantane hızını otomatik hesaplar.</li>
+    <li><strong>Tv / S (Shutter Priority - Enstantane Öncelikli Mod):</strong> Fotoğrafçı örtücü hızını belirler (hareketi dondurma veya hareket fluluğu kontrolü); makine uygun diyaframı otomatik ayarlar.</li>
+    <li><strong>M (Manual - Manuel Mod):</strong> Diyafram, enstantane ve ISO tamamen fotoğrafçının kontrolündedir. Işık şartlarının değişmediği stüdyo ve sanatsal çekimlerin vazgeçilmezidir.</li>
+  </ul>
+  <h2>3. Beyaz Ayarı (White Balance) ve Renk Sıcaklığı (Kelvin)</h2>
+  <p>Farklı ışık kaynakları farklı renk sıcaklıklarına sahiptir ve bu sıcaklık <strong>Kelvin (K)</strong> birimiyle ölçülür. İnsan beyni beyaz bir kağıdı her ışık altında beyaz görürken, makinenin sensörü ışığın renginden etkilenir.</p>
+  <ul>
+    <li><strong>Mum Işığı / Akkor Telli Ampul:</strong> 2500K - 3200K (Sarı / Turuncu sıcak tonlar).</li>
+    <li><strong>Doğal Gün Işığı / Flaş:</strong> 5200K - 5500K (Nötr beyaz).</li>
+    <li><strong>Bulutlu Hava / Gölge:</strong> 6500K - 7500K (Mavi soğuk tonlar).</li>
+  </ul>
+  <h2>4. Pozlama Telafisi (+/- EV) ve %18 Orta Gri Prensibi</h2>
+  <p>Fotoğraf makinelerinin içindeki pozometreler tüm dünyayı <strong>%18 yansıtma özelliğine sahip orta gri</strong> olarak kabul eder.</p>
+  <ul>
+    <li><strong>Kar ve Beyaz Yüzey Yanılgısı:</strong> Bembeyaz karlı bir manzarada pozometre ortamı çok aydınlık sanarak fotoğrafı griye çevirir (yetersiz pozlar). Beyazın bembeyaz çıkması için <strong>+1 veya +2 EV pozlama telafisi</strong> verilmelidir.</li>
+    <li><strong>Siyah ve Karanlık Arka Plan Yanılgısı:</strong> Zifiri siyah bir sahnede makine ortamı orta griye açmaya çalışır (aşırı pozlar). Siyahın gerçek derinlikte kalması için <strong>-1 veya -2 EV telafi</strong> uygulanmalıdır.</li>
+  </ul>
+`;
+
+// --- SAYFA 5 DERS NOTLARI VE AKADEMİK ÖZETİ ---
+document.getElementById('page-5-content').innerHTML = `
+  <h2>KAYNAK DERS NOTU: Kayıt Formatları Diyafram Enstantane.pdf</h2>
+  <h2>1. Dijital Fotoğrafçılıkta Baskı Ebatları ve Piksel Standartları</h2>
+  <ul>
+    <li><strong>10 x 15 cm baskı:</strong> 800 x 600 piksel (~0.5 MP)</li>
+    <li><strong>13 x 18 cm baskı:</strong> 1024 x 768 piksel (~0.8 MP)</li>
+    <li><strong>15 x 21 cm baskı:</strong> 1600 x 1200 piksel (~2 MP)</li>
+    <li><strong>20 x 30 cm baskı:</strong> 2048 x 1536 piksel (~3.1 MP)</li>
+    <li><strong>30 x 40 cm baskı:</strong> 2560 x 1920 piksel (~5 MP)</li>
+  </ul>
+  <h2>2. Dijital Kayıt Formatları: RAW, JPEG ve TIFF</h2>
+  <ul>
+    <li><strong>RAW (Sayısal Negatif):</strong> Sensörün topladığı ham ışık verisidir. Makine içinde hiçbir işleme tabi tutulmaz. 12-14 bit renk derinliğine sahiptir. Beyaz ayarı, pozlama hataları ve gölgeler bilgisayarda kayıpsız düzeltilebilir. Dosya boyutu çok büyüktür.</li>
+    <li><strong>JPEG:</strong> Fotoğraf makinesinin ham veriyi işleyip 8-bit olarak kayıplı sıkıştırdığı formattır. Dosya boyutu küçüktür, her cihazda açılır ancak düzenleme payı çok dardır.</li>
+    <li><strong>TIFF:</strong> Kayıpsız sıkıştırma destekleyen, matbaa ve profesyonel arşivleme standardı olan yüksek kaliteli formattır.</li>
+  </ul>
+  <h2>3. Diyafram (Aperture / f-stop) Mekanizması</h2>
+  <p>Objektifin içinde bulunan ve sensöre giren ışığın miktarını belirleyen ayarlanabilir metal yaprakçıklar mekanizmasıdır. İnsan gözünün irisine benzer.</p>
+  <ul>
+    <li><strong>Standart f-Serisi:</strong> f/1.4 - f/2 - f/2.8 - f/4 - f/5.6 - f/8 - f/11 - f/16 - f/22...</li>
+    <li><strong>Ters Orantı Kuralı:</strong> f-değeri küçüldükçe (örn: f/1.4) delik büyür, çok ışık girer ve <strong>sığ alan derinliği</strong> (arka plan flu/bokeh) oluşur. f-değeri büyüdükçe (örn: f/16) delik daralır, az ışık girer ve <strong>geniş alan derinliği</strong> (her yer net) elde edilir.</li>
+  </ul>
+  <h2>4. Enstantane (Shutter Speed / Örtücü Hızı) Mekanizması</h2>
+  <p>Sensörün önündeki mekanik veya elektronik perdenin ne kadar süre açık kalacağını belirleyen hız ayarıdır. İnsan gözünün göz kapağına benzer.</p>
+  <ul>
+    <li><strong>Hareketi Dondurma:</strong> 1/500, 1/1000, 1/2000 saniye gibi çok yüksek hızlar hızlı hareketleri havada dondurur.</li>
+    <li><strong>Hareket İzi (Fluluk):</strong> 1/2 saniye, 2 saniye, 30 saniye gibi uzun pozlamalar hareket eden unsurların iz bırakmasını sağlar (ipeksi şelaleler, ışık çizgileri). Makine sarsıntısını önlemek için mutlaka tripod gerektirir.</li>
+    <li><strong>B (Bulb) Modu:</strong> Deklanşöre basılı tutulduğu sürece perdenin açık kaldığı sınırsız pozlama modudur; gece yıldız izi ve şimşek çekimlerinde kullanılır.</li>
+  </ul>
+`;
+
+// --- SAYFA 3: OBJEKTİF TÜRLERİ (30 SORU) ---
+allQuestions[2] = [
+  { n: 1, q: "Sonsuza odaklanmış bir objektifin optik merkezi ile odak düzlemi (sensör/film) arasındaki mesafeye ne ad verilir?", o: ["Alan derinliği", "Odak uzaklığı (Focal length)", "Diyafram açıklığı", "Kırpma çarpanı"], a: 1 },
+  { n: 2, q: "Fotoğrafçılıkta objektifin odak uzaklığı küçüldükçe (örneğin 200 mm'den 24 mm'ye indikçe) görüş açısında nasıl bir değişim gerçekleşir?", o: ["Görüş açısı daralır", "Görüş açısı genişler", "Görüş açısı hiç değişmez", "Renkler siyah beyaza döner"], a: 1 },
+  { n: 3, q: "Tek bir odak uzaklığına sahip, zoom yapamayan ancak yüksek ışık geçirgenliği ve üstün optik keskinlik sunan objektiflere ne ad verilir?", o: ["Telefoto objektif", "Prime (Sabit odaklı) objektif", "Balıkgözü objektif", "Katadioptrik objektif"], a: 1 },
+  { n: 4, q: "180 derece veya daha geniş bir görüş açısı sunan ve optik fıçı distorsiyonunu kasıtlı olarak düzeltmeyen aşırı geniş açılı objektif türü hangisidir?", o: ["Balıkgözü (Fisheye)", "Makro", "Standart", "Telefoto"], a: 0 },
+  { n: 5, q: "Balıkgözü objektiflerin odak uzaklığı aralığı genellikle hangi sınırlar arasındadır?", o: ["6 mm - 16 mm", "50 mm - 85 mm", "70 mm - 200 mm", "300 mm - 600 mm"], a: 0 },
+  { n: 6, q: "35 mm film formatında 16 mm ile 35 mm odak uzaklığına sahip objektifler hangi sınıfa girer?", o: ["Telefoto objektifler", "Geniş açılı objektifler", "Normal objektifler", "Süper tele objektifler"], a: 1 },
+  { n: 7, q: "Geniş açılı objektiflerin perspektif üzerindeki en belirgin görsel etkisi nedir?", o: ["Ön plandaki nesneleri abartılı şekilde büyüterek derinlik hissini artırması", "Tüm arka planı ön plana yapıştırması", "Sadece yuvarlak kadraj vermesi", "Görüntüyü tamamen bulanıklaştırması"], a: 0 },
+  { n: 8, q: "35 mm formatında insan gözünün tek gözle gördüğü doğal perspektife en yakın orantıyı veren 'Normal' objektifin odak uzaklığı yaklaşık ne kadardır?", o: ["14 mm", "24 mm", "50 mm", "300 mm"], a: 2 },
+  { n: 9, q: "Normal (standart) objektiflerin görüş açısı yaklaşık kaç derecedir?", o: ["180 derece", "90-100 derece", "45-50 derece", "10 derece"], a: 2 },
+  { n: 10, q: "Görüş açısı 30 dereceden daha dar olan ve uzaktaki nesneleri yakınlaştıran objektif sınıfı hangisidir?", o: ["Geniş açılı", "Telefoto (Dar açılı)", "Balıkgözü", "Tilt-shift"], a: 1 },
+  { n: 11, q: "Telefoto objektiflerin uzun odak uzaklıklarında arka plan ile ön plan arasındaki mesafeyi yokmuş gibi gösteren optik etkisine ne ad verilir?", o: ["Perspektif sıkışması", "Vinyet etkisi", "Kromatik aberasyon", "Fıçı bükülmesi"], a: 0 },
+  { n: 12, q: "Portre fotoğrafçılığında yüz hatlarını deforme etmeden en doğal ve estetik basıklıkta veren ideal odak uzaklığı aralığı nedir?", o: ["8 mm - 15 mm", "85 mm - 135 mm", "400 mm - 800 mm", "16 mm - 24 mm"], a: 1 },
+  { n: 13, q: "Bir objektifin 'gerçek makro' objektif sayılabilmesi için konuyu sensör yüzeyine aktarma oranı (reprodüksiyon oranı) en az ne olmalıdır?", o: ["1:1 (Bire bir gerçek boyut)", "1:4", "1:10", "2:10"], a: 0 },
+  { n: 14, q: "Mimari fotoğrafçılıkta yüksek binaların kaçış çizgilerini düzeltmek veya minyatür etkisi yaratmak için kullanılan objektif hangisidir?", o: ["Tilt-Shift objektif", "Aynalı (Reflex) objektif", "Anamorfik objektif", "Pinhole objektif"], a: 0 },
+  { n: 15, q: "Sinematik çekimlerde geniş kadrajı sensöre yatayda sıkıştırıp kaydeden, oval bokeh ve mavi çizgi parlamaları üreten objektif hangisidir?", o: ["Telekonvertör", "Anamorfik objektif", "Katadioptrik lens", "Makro lens"], a: 1 },
+  { n: 16, q: "İçerisinde ayna mekanizması barındıran, çok hafif ve kompakt yapıda üretilebilen ancak halka şeklinde (donut) bokeh veren telefoto objektif hangisidir?", o: ["Aynalı (Katadioptrik) objektif", "Asferik objektif", "Prime objektif", "Balıkgözü"], a: 0 },
+  { n: 17, q: "Fotoğraf makinesinde netleme yaparken objektif üzerindeki netleme halkasının elle çevrilmesi yöntemine ne ad verilir?", o: ["Otomatik Netleme (AF)", "Manuel Netleme (MF)", "Sürekli AF", "Takip AF"], a: 1 },
+  { n: 18, q: "Objektifin gövdeye bağlandığı metal halka ve kilit mekanizmasına genel olarak ne ad verilir?", o: ["Bajonet (Lens Yuvası / Mount)", "Filtre yivi", "Diyafram bıçağı", "Netlik skalası"], a: 0 },
+  { n: 19, q: "Zoom objektiflerde odak uzaklığını değiştirmek için çevrilen bileziğe ne ad verilir?", o: ["Diyafram bileziği", "Zoom (Yakınlaştırma) halkası", "Netleme halkası", "Diyopter ayarı"], a: 1 },
+  { n: 20, q: "Objektiflerin üzerinde yer alan ve ışığın merceklerden geçerken farklı dalga boylarına ayrılarak kenarlarda mor/yeşil saçaklar oluşturmasını önleyen özel optik eleman hangisidir?", o: ["Düşük Dağılımlı Cam (ED / LD)", "Polarize cam", "UV filtre", "Plastik mercek"], a: 0 },
+  { n: 21, q: "Kenarlarda ışık kaybı nedeniyle oluşan kararmaya fotoğrafçılıkta ne ad verilir?", o: ["Kromatik aberasyon", "Vinyet (Vignetting)", "Distorsiyon", "Parlama (Flare)"], a: 1 },
+  { n: 22, q: "Güneş ışınlarının doğrudan objektifin içine girip parlamalar ve kontrast kaybı oluşturmasını engellemek için objektifin ucuna takılan parasoleyin diğer adı nedir?", o: ["Parasoley (Lens Hood)", "Telekonvertör", "Uzatma tüpü", "Adaptör halkası"], a: 0 },
+  { n: 23, q: "Mevcut bir telefoto objektifin odak uzaklığını 1.4x veya 2x artıran ancak diyafram açıklığını 1 veya 2 stop düşüren ara optik parçaya ne ad verilir?", o: ["Telekonvertör (Extender)", "Ters bağlantı halkası", "Körük", "ND Filtre"], a: 0 },
+  { n: 24, q: "Bir objektif üzerindeki 'f/2.8' ibaresi neyi ifade eder?", o: ["Objektifin minimum odak mesafesini", "Objektifin sunabildiği maksimum diyafram açıklığını", "Objektifin ağırlığını", "Filtre çapını"], a: 1 },
+  { n: 25, q: "Spor ve vahşi yaşam fotoğrafçılarının kullandığı 400 mm, 600 mm ve 800 mm gibi devasa objektifler hangi sınıftadır?", o: ["Geniş açı", "Süper Telefoto", "Makro", "Standart"], a: 1 },
+  { n: 26, q: "Geniş açılı bir objektifle portre çekildiğinde burun ve yüz hatlarında oluşan şişkinlik ve deformasyonun optik sebebi nedir?", o: ["Konuya aşırı yaklaşılması ve geniş açının perspektif abartması", "Sensörün piksel hatası", "Diyaframın kısılması", "ISO'nun yükseltilmesi"], a: 0 },
+  { n: 27, q: "Ultrasonik motor (USM / SWM / SSM) teknolojisine sahip objektiflerin temel avantajı nedir?", o: ["Çok daha sessiz, hızlı ve hassas otomatik netleme yapabilmesi", "Gece parlamalarını önlemesi", "Görüntüyü otomatik kırpması", "Sensörü temizlemesi"], a: 0 },
+  { n: 28, q: "Bir zoom objektifin üzerinde '24-70mm f/2.8' yazıyorsa bu ne anlama gelir?", o: ["Odak uzaklığı değiştikçe diyaframın f/5.6'ya düşmesi", "Tüm odak aralığında sabit f/2.8 maksimum açıklık sunabilen profesyonel bir zoom lens olması", "Sadece 24 mm'de çalışabilmesi", "70 mm'de f/1.4 olması"], a: 1 },
+  { n: 29, q: "Görüntü sabitleme (IS / VR / OS) sistemine sahip objektiflerin fotoğrafçıya sağladığı temel fayda nedir?", o: ["Düşük enstantane hızlarında el titremesinden kaynaklanan bulanıklığı telafi edebilmesi", "Fotoğrafın çözünürlüğünü 4 kat artırması", "Hızlı koşan nesneleri dondurması", "Renkleri doyurması"], a: 0 },
+  { n: 30, q: "Manzara fotoğrafçıları ufuk çizgisini ve gökyüzünü olabildiğince geniş kadrajlayabilmek için öncelikle hangi objektif türünü seçmelidir?", o: ["Geniş Açılı Objektif", "Telefoto Objektif", "Aynalı Objektif", "Makro Objektif"], a: 0 }
+];
+
+// --- SAYFA 4: ISO, ÇEKİM MODLARI, BEYAZ AYARI (30 SORU) ---
+allQuestions[3] = [
+  { n: 1, q: "Fotoğraf makinelerinde sensörün ışığa karşı duyarlılık derecesini gösteren uluslararası standart birim nedir?", o: ["Kelvin", "ISO (ASA)", "Enstantane", "Diopter"], a: 1 },
+  { n: 2, q: "Fotoğraf makinesinde ISO değeri 100'den 800'e çıkarıldığında sensör duyarlılığı kaç kat artmış olur?", o: ["2 kat", "4 kat", "8 kat", "16 kat"], a: 2 },
+  { n: 3, q: "ISO değeri yükseltildikçe fotoğrafta oluşan kumlanma, renk bozulması ve noktasal kirlenmelere ne ad verilir?", o: ["Bokeh", "Noise (Gren / Parazit)", "Distorsiyon", "Vinyet"], a: 1 },
+  { n: 4, q: "En yüksek keskinlik, sıfır kumlanma ve en geniş dinamik aralık elde etmek için hangi ISO değeri tercih edilmelidir?", o: ["Temel (Taban) ISO (Örn: 100)", "ISO 3200", "ISO 6400", "ISO 12800"], a: 0 },
+  { n: 5, q: "Güneşli açık bir havada dış mekanda çekim yaparken ayarlanması gereken ideal ISO değeri nedir?", o: ["100 - 200", "1600 - 3200", "6400", "25600"], a: 0 },
+  { n: 6, q: "Flaş kullanımının yasak olduğu loş bir tiyatro salonunda elde net fotoğraf çekebilmek için ISO nasıl ayarlanmalıdır?", o: ["50'ye düşürülmelidir", "1600, 3200 veya daha yüksek bir değere artırılmalıdır", "ISO kapatılmalıdır", "Değişmemelidir"], a: 1 },
+  { n: 7, q: "Fotoğraf makinesinde 'P' (Program) çekim modunun çalışma prensibi nedir?", o: ["Makine hem diyafram hem enstantaneyi otomatik ayarlar; ISO ve beyaz ayarını kullanıcıya bırakır", "Kullanıcı her şeyi manuel yapar", "Makine sadece video çeker", "Sadece flaş patlatır"], a: 0 },
+  { n: 8, q: "Fotoğrafçının alan derinliğini kontrol etmek için diyaframı seçtiği, enstantaneyi makinenin hesapladığı mod hangisidir?", o: ["Tv / S", "Av / A (Aperture Priority)", "M (Manual)", "P (Program)"], a: 1 },
+  { n: 9, q: "Fotoğrafçının hareketi dondurmak veya hareket izi vermek için örtücü hızını seçtiği çekim modu hangisidir?", o: ["Tv / S (Shutter Priority)", "Av / A", "Auto", "Scene"], a: 0 },
+  { n: 10, q: "Hem diyaframın hem enstantanenin tamamen kullanıcı tarafından ayarlandığı profesyonel mod hangisidir?", o: ["M (Manual)", "P", "Av", "Auto"], a: 0 },
+  { n: 11, q: "Işık kaynaklarının renk sıcaklığını ölçmek için kullanılan bilimsel birim nedir?", o: ["Candela", "Lümen", "Kelvin (K)", "Watt"], a: 2 },
+  { n: 12, q: "Akkor telli ev ampulünün (tungsten) yaydığı ışığın Kelvin sıcaklığı ve renk tonu yaklaşık nedir?", o: ["2800K - 3200K (Sarı / Turuncu sıcak ton)", "5500K (Nötr beyaz)", "8000K (Mavi soğuk ton)", "12000K"], a: 0 },
+  { n: 13, q: "Öğle vaktindeki standart güneş ışığının ve flaş ışığının Kelvin renk sıcaklığı yaklaşık ne kadardır?", o: ["2500 K", "5200 K - 5500 K", "9000 K", "1500 K"], a: 1 },
+  { n: 14, q: "Bulutlu hava ve açık gölge alanların yaydığı ışık hangi renk tonuna ve Kelvin değerine sahiptir?", o: ["6500 K - 7500 K (Mavi / Soğuk tonlar)", "2000 K (Kırmızı tonlar)", "1000 K", "3000 K"], a: 0 },
+  { n: 15, q: "Sarı ışıkla aydınlatılmış bir odada çekilen fotoğrafın aşırı sarı çıkmasını önleyip beyazları nötrlemek için hangi ayar yapılır?", o: ["Beyaz Ayarı (White Balance - WB)", "Diyafram ayarı", "AF noktası ayarı", "Pozometre modu"], a: 0 },
+  { n: 16, q: "Fotoğraf makinesindeki dahili pozometreler tüm sahneyi hangi standart tona dönüştürmeye çalışacak şekilde kalibre edilmiştir?", o: ["Zifiri siyah", "%18 Orta Gri", "Saf beyaz", "Altın sarısı"], a: 1 },
+  { n: 17, q: "Bembeyaz karlı bir manzarada pozometre sahneyi griye dönüştürmesin diye hangi pozlama telafisi (+/- EV) uygulanmalıdır?", o: ["+1 veya +2 EV pozlama telafisi verilmelidir", "-2 EV telafi verilmelidir", "Pozlama telafisi sıfırlanmalıdır", "Flaş kapatılmalıdır"], a: 0 },
+  { n: 18, q: "Siyah bir kumaş önündeki koyu renkli bir nesnenin aşırı aydınlanıp grileşmesini önlemek için ne yapılmalıdır?", o: ["-1 veya -2 EV negatif pozlama telafisi uygulanmalıdır", "+3 EV verilmelidir", "ISO 6400 yapılmalıdır", "Beyaz ayarı değiştirilmelidir"], a: 0 },
+  { n: 19, q: "Fotoğraf makinesinde çekilen karenin aydınlık, orta ton ve gölge dağılımını gösteren grafiksel şemaya ne ad verilir?", o: ["Histogram", "Kelvin skalası", "Netlik skalası", "RGB tekerleği"], a: 0 },
+  { n: 20, q: "Bir histogram grafiğinde verilerin tamamen sağ duvara yığılması ve tepe yapması ne anlama gelir?", o: ["Aşırı pozlama (Patlamış beyazlar ve detay kaybı)", "Fotoğrafın çok karanlık olduğu", "Mükemmel pozlama", "Yüksek kontrast"], a: 0 },
+  { n: 21, q: "Histogram grafiğinde verilerin tamamen sol duvara yığılması neyi ifade eder?", o: ["Yetersiz pozlama (Zifiri siyahlar ve gölge detay kaybı)", "Fotoğrafın aşırı parlak olduğu", "Renklerin soluk olduğu", "ISO'nun düşük olduğu"], a: 0 },
+  { n: 22, q: "Işık şartlarının kadrajın her yerinde eşit olmadığı, arkadan sert ışık gelen sahnelerde doğru pozlama için hangi ölçüm modu seçilmelidir?", o: ["Nokta (Spot) Ölçüm Modu", "Matris / Değerlendirmeli Ölçüm", "Çoklu Alan Ölçümü", "Otomatik Alan"], a: 0 },
+  { n: 23, q: "Kadrajın tamamından ışık bilgisi toplayıp ortalamasını alan genel pozometre ölçüm modu hangisidir?", o: ["Matris (Evaluative / Matrix) Ölçüm Modu", "Nokta Ölçüm", "Merkez Ağırlıklı", "Kısmi Ölçüm"], a: 0 },
+  { n: 24, q: "Yüksek ISO kullanımının dinamik aralık üzerindeki etkisi nedir?", o: ["Dinamik aralığı daraltır, en parlak ile en karanlık arasındaki geçiş tonlarını azaltır", "Dinamik aralığı iki katına çıkarır", "Hiçbir etkisi yoktur", "Fotoğrafı HDR yapar"], a: 0 },
+  { n: 25, q: "Kelvin değeri fotoğraf makinesinde manuel olarak 3000 K ayarlanırsa, makine fotoğrafa hangi rengi ekleyerek dengeleme yapar?", o: ["Mavi soğuk ton ekler", "Kırmızı sıcak ton ekler", "Yeşil ekler", "Sarı ekler"], a: 0 },
+  { n: 26, q: "Kelvin değeri makinede 7000 K olarak ayarlanırsa görüntüye hangi renk tonu hakim olur?", o: ["Sıcak turuncu/sarı tonlar", "Buz mavisi", "Yeşil", "Gri"], a: 0 },
+  { n: 27, q: "Fotoğraf makinelerinde 'Auto ISO' (Otomatik ISO) kullanırken kumlanmayı sınırlandırmak için ne yapılmalıdır?", o: ["Maksimum ISO sınır değeri (örn: Maks ISO 1600) tanımlanmalıdır", "ISO tamamen kapatılmalıdır", "Her çekimde pil çıkarılmalıdır", "Enstantane 1 saniye yapılmalıdır"], a: 0 },
+  { n: 28, q: "Sahnenin en aydınlık kısmı ile en karanlık kısmı arasındaki ışık şiddeti farkına ne ad verilir?", o: ["Dinamik Aralık (Dynamic Range) / Kontrast", "Diyafram adımı", "Enstantane süresi", "Görüş açısı"], a: 0 },
+  { n: 29, q: "Hızlı hareket eden sporcuları çekerken enstantanenin 1/1000s altına düşmemesi için hangi çekim modu tercih edilmelidir?", o: ["Tv / S (Enstantane Öncelikli Mod)", "Av (Diyafram Öncelikli Mod)", "P Modu", "Manzara Modu"], a: 0 },
+  { n: 30, q: "Portre çekerken arka planı tamamen bulanıklaştırıp modeli öne çıkarmak isteyen fotoğrafçı hangi modu kullanmalıdır?", o: ["Av / A (Diyafram Öncelikli Mod - En açık diyaframı seçerek)", "Tv Modu", "Auto Modu", "Spor Modu"], a: 0 }
+];
+
+// --- SAYFA 5: FORMATLAR, DİYAFRAM, ENSTANTANE (30 SORU) ---
+allQuestions[4] = [
+  { n: 1, q: "Kayıt formatları ders notuna göre 10 x 15 cm boyutunda kaliteli bir baskı alabilmek için gereken asgari piksel miktarı nedir?", o: ["800 x 600 piksel", "2048 x 1536 piksel", "3000 x 4000 piksel", "100 x 200 piksel"], a: 0 },
+  { n: 2, q: "20 x 30 cm boyutlarında standart bir fotoğraf baskısı için ders notlarında belirtilen asgari piksel ölçüsü nedir?", o: ["2048 x 1536 piksel (~3.1 MP)", "800 x 600 piksel", "1024 x 768 piksel", "640 x 480 piksel"], a: 0 },
+  { n: 3, q: "Fotoğraf makinesi sensörünün yakaladığı ışık verisini hiçbir işleme ve kayıplı sıkıştırmaya uğratmadan kaydeden formata ne ad verilir?", o: ["RAW (Sayısal Negatif)", "JPEG", "GIF", "PNG"], a: 0 },
+  { n: 4, q: "JPEG formatının fotoğraf makinesindeki işleyişi ile ilgili hangisi DOĞRUDUR?", o: ["Makine kontrastı, keskinliği ve renkleri kendisi işler, 8-bit kayıplı sıkıştırma uygular", "Hiç sıkıştırma yapmaz", "16-bit veri kaydeder", "Düzenleme esnekliği RAW'dan fazladır"], a: 0 },
+  { n: 5, q: "Baskı öncesi hazırlıkta ve matbaacılıkta kayıpsız veri saklama standardı olarak kullanılan format hangisidir?", o: ["TIFF", "JPEG", "MP4", "HTML"], a: 0 },
+  { n: 6, q: "RAW formatta çekim yapmanın fotoğrafçıya sağladığı en büyük avantaj nedir?", o: ["Bilgisayarda beyaz ayarı, pozlama ve gölge detaylarının kayıpsız düzeltilebilmesi", "Dosya boyutunun çok küçük olması", "Her telefonun anında açabilmesi", "Hafıza kartında hiç yer kaplamaması"], a: 0 },
+  { n: 7, q: "Objektifin içinde bulunan ve sensöre düşen ışığın miktarını belirleyen ayarlanabilir metal yaprakçıklar mekanizmasına ne ad verilir?", o: ["Diyafram (Aperture)", "Enstantane", "Deklanşör", "Pentaprizma"], a: 0 },
+  { n: 8, q: "Diyafram açıklığı fotoğraf makinesinde hangi sembolle gösterilir?", o: ["f-değeri (f-stop)", "ISO", "K (Kelvin)", "EV"], a: 0 },
+  { n: 9, q: "Aşağıdaki diyafram değerlerinden hangisi objektif açıklığının en geniş olduğu ve sensöre en çok ışık giren seçenektir?", o: ["f/1.4", "f/5.6", "f/11", "f/22"], a: 0 },
+  { n: 10, q: "Aşağıdaki diyafram değerlerinden hangisi en kısık/dar delik açıklığını temsil eder ve en az ışık geçirir?", o: ["f/22", "f/1.8", "f/2.8", "f/4"], a: 0 },
+  { n: 11, q: "Netlenen konunun önünde ve arkasında net olarak görünen derinlik alanına ne ad verilir?", o: ["Alan Derinliği (Depth of Field)", "Odak uzaklığı", "Görüş açısı", "Kırpma faktörü"], a: 0 },
+  { n: 12, q: "Bir fotoğrafta nesnenin net, arka planın ise tamamen bulanık (sığ alan derinliği / bokeh) olması için diyafram nasıl ayarlanmalıdır?", o: ["f/1.4 veya f/2 gibi küçük f-sayısı (açık diyafram) seçilmelidir", "f/22 yapılmalıdır", "f/16 yapılmalıdır", "Diyafram kapatılmalıdır"], a: 0 },
+  { n: 13, q: "Manzara ve mimari çekimlerinde ön plandaki taştan ufuktaki dağlara kadar her yerin net çıkması için diyafram nasıl ayarlanmalıdır?", o: ["f/8, f/11 veya f/16 gibi kısık diyafram seçilmelidir", "f/1.2 seçilmelidir", "f/1.4 seçilmelidir", "Enstantane 1/4000 yapılmalıdır"], a: 0 },
+  { n: 14, q: "Sensörün ne kadar süre boyunca ışık alacağını belirleyen mekanik veya elektronik perde sistemine ne ad verilir?", o: ["Enstantane (Örtücü / Shutter)", "Diyafram", "Vizör", "Ayna"], a: 0 },
+  { n: 15, q: "Hızlı koşan bir koşucuyu veya uçan bir kuşu havada kristal netliğinde dondurmak için hangi enstantane hızı uygundur?", o: ["1/1000 veya 1/2000 saniye", "1/15 saniye", "1 saniye", "5 saniye"], a: 0 },
+  { n: 16, q: "Akan bir şelalenin suyuna tül/ipeksi bir hareket fluluğu etkisi kazandırmak için hangi enstantane tekniği uygulanmalıdır?", o: ["Tripod kullanarak 1-2 saniye veya daha uzun pozlama yapılmalıdır", "1/4000 saniye enstantane kullanılmalıdır", "Flaş patlatılmalıdır", "ISO 6400 yapılmalıdır"], a: 0 },
+  { n: 17, q: "Fotoğraf makinesi elde tutulurken el titremesinden kaynaklanan bulanıklığı önlemek için genel kural olarak enstantane hızının altına düşülmemesi önerilen sınır nedir?", o: ["1/Odak Uzaklığı kuralı (Örn: 50mm için en az 1/50 veya 1/60 saniye)", "10 saniye", "1/2 saniye", "30 saniye"], a: 0 },
+  { n: 18, q: "Deklanşöre basıldığı sürece perdenin açık kaldığı ve parmak çekildiğinde kapandığı sınırsız pozlama moduna ne ad verilir?", o: ["Bulb (B) Modu", "Tv Modu", "Av Modu", "P Modu"], a: 0 },
+  { n: 19, q: "Gece gökyüzünde yıldız izi veya şimşek fotoğrafları çekmek için en uygun çekim tekniği hangisidir?", o: ["Sağlam bir tripod üzerinde Bulb veya uzun pozlama (uzun saniyeler)", "1/8000s elde çekim", "Dahili flaşla çekim", "Maksimum dijital zoom"], a: 0 },
+  { n: 20, q: "Pozlama üçgenini oluşturan üç temel bileşen hangileridir?", o: ["Diyafram, Enstantane, ISO", "RAW, JPEG, TIFF", "RGB, CMYK, LAB", "Odak uzaklığı, Açı, Piksel"], a: 0 },
+  { n: 21, q: "Fotoğraf makinesinde diyafram değeri f/4'ten f/5.6'ya getirildiğinde sensöre giren ışık miktarında nasıl bir değişim olur?", o: ["Işık miktarı yarı yarıya azalır (1 stop ışık kaybı)", "Işık iki katına çıkar", "Işık değişmez", "Renkler solar"], a: 0 },
+  { n: 22, q: "Enstantane hızı 1/250 saniyeden 1/500 saniyeye çıkarıldığında pozlama süresi nasıl değişir?", o: ["Yarı yarıya kısalır (Sensör yarı yarıya daha az ışık alır)", "İki kat uzar", "Dört katına çıkar", "Değişmez"], a: 0 },
+  { n: 23, q: "Diyafram 1 stop kısıldığında (f/4'ten f/5.6'ya), pozlamanın aynı kalması için enstantane hızı nasıl değiştirilmelidir?", o: ["Enstantane 1 stop yavaşlatılmalıdır (örn: 1/500'den 1/250'ye)", "Enstantane 1/1000 yapılmalıdır", "Enstantane değiştirilmemelidir", "ISO düşürülmelidir"], a: 0 },
+  { n: 24, q: "Fotoğraf makinesinde f-sayısı ile diyafram deliği arasındaki ilişki nasıldır?", o: ["Ters orantılıdır (f-sayısı büyüdükçe delik küçülür)", "Doğru orantılıdır", "Hiçbir ilişkisi yoktur", "Logaritmik olarak delik büyür"], a: 0 },
+  { n: 25, q: "Bir nesneyi pan tekniğiyle (hareket hissi vererek arka planı çizgi çizgi kaydırma) çekmek için ideal enstantane hızı nedir?", o: ["1/30 veya 1/60 saniye (nesneyi takip ederek)", "1/4000 saniye", "1/8000 saniye", "30 saniye"], a: 0 },
+  { n: 26, q: "RAW dosyaların uzantısı fotoğraf makinesi markalarına göre değişiklik gösterir. 'CR2 / CR3' hangi markanın RAW formatıdır?", o: ["Canon", "Nikon (NEF)", "Sony (ARW)", "Fujifilm (RAF)"], a: 0 },
+  { n: 27, q: "Nikon fotoğraf makinelerinin ham görüntü (RAW) dosya uzantısı nedir?", o: ["NEF", "CR2", "ARW", "DNG"], a: 0 },
+  { n: 28, q: "Aşağıdakilerden hangisi alan derinliğini etkileyen üç faktörden biri DEĞİLDİR?", o: ["Diyafram açıklığı", "Kullanılan objektifin odak uzaklığı", "Konuya olan çekim mesafesi", "Fotoğraf makinesinin gövde rengi"], a: 3 },
+  { n: 29, q: "Konuya fiziksel olarak çok yaklaşıldığında alan derinliğinde nasıl bir değişim gözlenir?", o: ["Alan derinliği aşırı derecede sığlaşır", "Alan derinliği sonsuz olur", "Hiçbir şey değişmez", "Görüntü ters döner"], a: 0 },
+  { n: 30, q: "Diyafram çok fazla kısıldığında (örn: f/22 veya f/32) ışığın delik kenarlarından bükülmesiyle oluşan ve keskinliği bozan optik olaya ne ad verilir?", o: ["Difraksiyon (Kırınım)", "Distorsiyon", "Vinyet", "Bokeh"], a: 0 }
+];
+
+// Sayfa 3, 4, 5 Soru Kartlarını Render Et
+renderQuiz(2);
+renderQuiz(3);
+renderQuiz(4);
+  </script>
+</body>
+</html>
